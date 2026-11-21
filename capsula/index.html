@@ -2,30 +2,453 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>Cápsula do tempo 2036</title>
+<meta name="theme-color" content="#111111">
+<title>⏳ Cápsula do tempo 2026 → 2036</title>
 <style>
+  :root { --ink: #111; --paper: #f6f3ec; --or: #f26b21; --mute: #cfcabd; --dim: #8f8a7e; }
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
-         background: #111; color: #f6f3ec; font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
-         text-align: center; padding: 32px 24px; }
-  .emoji { font-size: 72px; line-height: 1; }
-  h1 { font-size: 34px; font-weight: 900; margin: 20px 0 8px; letter-spacing: -0.5px; }
-  h1 span { color: #f26b21; }
-  p { font-size: 18px; line-height: 1.5; margin: 8px auto; max-width: 28em; color: #cfcabd; }
-  .ru { margin-top: 28px; font-weight: 900; color: #f26b21; font-size: 22px; }
-  a { color: #f26b21; }
-  ul { list-style: none; padding: 0; font-size: 20px; line-height: 2; }
+  html { background: var(--ink); }
+  body { margin: 0; background: var(--ink); color: var(--paper); line-height: 1.45;
+         font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+  main { max-width: 520px; margin: 0 auto; padding: 28px 22px 56px; text-align: center; position: relative; }
+  [hidden] { display: none !important; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+
+  .mudo { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border-radius: 50%;
+          background: transparent; border: 1px solid #444; font-size: 18px; line-height: 1; }
+  .anos { font-weight: 900; font-size: 38px; letter-spacing: -1px; }
+  .anos span { color: var(--or); }
+  h1 { font-size: 22px; font-weight: 900; margin: 2px 0 0; }
+  .dono { margin: 0; color: var(--dim); font-size: 14px; }
+  .conta { margin: 14px 0 0; color: var(--mute); font-size: 14px; font-variant-numeric: tabular-nums; }
+  .conta b { color: var(--paper); font-weight: 900; }
+
+  section { margin-top: 26px; }
+  .chama { font-size: 20px; font-weight: 900; line-height: 1.2; margin: 0 0 18px; }
+  .ano { color: var(--or); }
+  .pad { display: flex; flex-direction: column; align-items: center; justify-content: space-between; position: relative; overflow: hidden;
+         width: min(68vw, 260px); aspect-ratio: 1; margin: 0 auto; padding: 16px 0; border-radius: 50%;
+         border: 4px solid var(--or); background: linear-gradient(#2a1a10, #15100c); font-weight: 900; font-size: 19px;
+         touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; transition: transform .08s; }
+  .pad.bate { transform: scale(.95); border-color: var(--paper); }
+  .pad small { font-weight: 800; font-size: 10.5px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--dim); pointer-events: none; }
+  .pad .meio { pointer-events: none; }
+  .dedo { position: absolute; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; background: var(--or);
+          pointer-events: none; animation: some .6s ease-out both; }
+  @keyframes some { from { opacity: .9; transform: scale(.4); } to { opacity: 0; transform: scale(1.8); } }
+  .pontos { display: flex; gap: 10px; justify-content: center; margin: 18px 0 8px; }
+  .pontos i { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #555; }
+  .pontos i.on { background: var(--or); border-color: var(--or); }
+  .dica { color: var(--dim); font-size: 15px; margin: 0; min-height: 22px; }
+
+  .desenho { display: block; width: calc(100% + 44px); margin: 0 -22px; height: auto; background: #171717;
+             border-top: 1px solid #2f2f2f; border-bottom: 1px solid #2f2f2f; }
+  .desenho .fio { fill: none; stroke: var(--paper); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .desenho .marca { stroke: var(--or); stroke-width: 13; stroke-linecap: round; fill: var(--or); transition: stroke .08s, fill .08s; }
+  .desenho .ponto { stroke-width: 0; }
+  .desenho .marca.soa { stroke: var(--paper); fill: var(--paper); }
+  .desenho.nasce .fio { stroke-dasharray: 1; stroke-dashoffset: 1; animation: traca 1s .1s ease-out forwards; }
+  @keyframes traca { to { stroke-dashoffset: 0; } }
+  .quando { color: var(--dim); font-size: 13.5px; margin: 10px 0 0; }
+  .parede { margin: 20px 0 0; border: 2px dashed var(--or); border-radius: 14px; padding: 16px; }
+  .parede b { display: block; font-weight: 900; font-size: 17px; }
+  .parede p { margin: 6px 0 0; color: var(--mute); font-size: 15.5px; }
+  .botoes { display: flex; gap: 10px; margin-top: 16px; }
+  .botoes button { flex: 1; border-radius: 999px; padding: 13px 10px; font-weight: 900; font-size: 15px;
+                   background: transparent; border: 2px solid var(--paper); }
+  .botoes button.fraco { border-color: #444; color: var(--mute); }
+  .salvar { display: block; width: 100%; margin-top: 10px; border: 0; border-radius: 999px; padding: 15px 10px;
+            background: var(--or); color: var(--ink); font-weight: 900; font-size: 16px; }
+  .salvo { color: var(--dim); font-size: 13px; margin: 8px 0 0; min-height: 19px; }
+  .regra { color: var(--dim); font-size: 13px; margin: 22px 0 0; }
+
+  .carimbo { display: inline-block; border: 4px solid var(--or); color: var(--or); font-weight: 900; font-size: 34px; letter-spacing: 1px;
+             padding: 6px 18px; border-radius: 10px; transform: rotate(-5deg); margin: 6px 0 22px; }
+  .texto { color: var(--mute); font-size: 16px; margin: 0 0 18px; }
+  .reabre { font-size: 15px; color: var(--mute); margin: 0; font-variant-numeric: tabular-nums; }
+  .reabre b { display: block; color: var(--paper); font-weight: 900; font-size: 24px; }
+
+  .meus { text-align: left; border-top: 1px solid #2f2f2f; padding-top: 18px; }
+  .meus h2 { font-size: 13px; font-weight: 900; letter-spacing: 1.2px; text-transform: uppercase; color: var(--mute); margin: 0 0 8px; }
+  .meus ul { list-style: none; margin: 0; padding: 0; }
+  .meus li { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px 44px; gap: 8px; align-items: center; padding: 6px 0; }
+  .meus .a { font-weight: 900; }
+  .meus .desenho { width: 100%; height: 76px; margin: 0; border: 0; border-radius: 8px; }
+  .meus button { width: 44px; height: 44px; border-radius: 50%; background: transparent; border: 1px solid #555; font-size: 14px; }
+
+  .ru { margin: 34px 0 0; color: var(--or); font-weight: 900; font-size: 17px; }
+  .ru span { display: block; color: var(--dim); font-weight: 400; font-size: 13px; }
+  :focus-visible { outline: 2px solid var(--or); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { .desenho.nasce .fio, .dedo { animation: none; } .desenho.nasce .fio { stroke-dasharray: none; } .pad { transition: none; } }
 </style>
 </head>
 <body>
 <main>
-<div class="emoji">⏳</div>
-<h1>Cápsula do tempo <span>2026 → 2036</span></h1>
-<p>A máquina do tempo ainda está aquecendo os motores.</p>
-<p>Volte daqui a pouco e escaneie de novo.</p>
-<p class="ru">СКОРО · em breve</p>
+  <button class="mudo" id="mudo" type="button" aria-label="Desligar o som">🔊</button>
+
+  <header>
+    <div class="anos">2026 <span>→</span> 2036</div>
+    <h1>Cápsula do tempo</h1>
+    <p class="dono">no quarto do Landim</p>
+    <p class="conta" id="conta"></p>
+  </header>
+
+  <section id="tela-aberta" hidden>
+    <div id="gravar">
+      <p class="chama">Deixe aqui o seu ritmo de <span class="ano"></span>.</p>
+      <button class="pad" id="pad" type="button" aria-describedby="dica">
+        <small>agudo</small><span class="meio" id="padtxt">Toque 5 vezes</span><small>grave</small>
+      </button>
+      <div class="pontos" id="pontos" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+      <p class="dica" id="dica" role="status">Curto ou longo, em cima ou embaixo: cada toque soa diferente.</p>
+    </div>
+    <div id="feito" hidden>
+      <p class="chama">Este é o seu ritmo de <span class="ano"></span>.</p>
+      <svg class="desenho" id="desenho" role="img" aria-label="O desenho do seu ritmo"></svg>
+      <p class="quando" id="quando"></p>
+      <div class="parede">
+        <b>Agora, na parede</b>
+        <p>Desenhe esta linha onde quiser. Bolinha é toque curto, traço é toque longo.</p>
+      </div>
+      <div class="botoes">
+        <button type="button" id="ouvir">▶ Ouvir</button>
+        <button type="button" id="refazer" class="fraco">↺ Refazer</button>
+      </div>
+      <button type="button" id="salvar" class="salvar">⬇ Salvar o desenho</button>
+      <p class="salvo" id="salvo" role="status"></p>
+    </div>
+    <p class="regra" id="regra"></p>
+  </section>
+
+  <section id="tela-lacrada" hidden>
+    <div class="carimbo">LACRADA</div>
+    <p class="texto">A Cápsula só recebe ritmos na semana do aniversário, de 16 a 22 de novembro.</p>
+    <p class="reabre"><span id="reabre-rotulo"></span><b id="reabre"></b></p>
+  </section>
+
+  <section id="tela-abriu" hidden>
+    <div class="carimbo">ABRIU</div>
+    <p class="chama">Dez anos. A parede está cheia de ritmos.</p>
+    <p class="texto">Leia a parede com os dedos: toque aqui os ritmos que você encontrar nela.</p>
+    <button class="pad" id="pad-livre" type="button"><small>agudo</small><span class="meio">Toque</span><small>grave</small></button>
+  </section>
+
+  <section class="meus" id="meus" hidden>
+    <h2>Seus ritmos neste celular</h2>
+    <ul id="lista"></ul>
+  </section>
+
+  <p class="ru">БУДУЩЕЕ УЖЕ ЗДЕСЬ <span>o futuro já chegou</span></p>
 </main>
+
+<script src="../config.js"></script>
+<script>
+(function () {
+  var cfg = window.LANDIM || {};
+  var ABRE = new Date(cfg.ABERTURA || "2036-11-16T00:00:00-03:00").getTime();
+  var CHAVE = "landim.capsula.ritmos", CHAVE_MUDO = "landim.capsula.mudo", N = 5, SEGURA_MAX = 2500;
+  var $ = function (id) { return document.getElementById(id); };
+  function p2(n) { return (n < 10 ? "0" : "") + n; }
+
+  /* ----- relógio (com atalhos de teste: #lacrada, #2036, #em=2029-11-17) ----- */
+  var desvio = 0, h = location.hash.slice(1);
+  if (h === "lacrada") desvio = Date.parse("2029-03-10T12:00:00-03:00") - Date.now();
+  else if (h === "2036") desvio = ABRE + 3600000 - Date.now();
+  else if (/^em=\d{4}-\d\d-\d\d$/.test(h)) desvio = Date.parse(h.slice(3) + "T12:00:00-03:00") - Date.now();
+  function agora() { return Date.now() + desvio; }
+  function sp(t) { return new Date(t - 3 * 3600000); }                 // horário de Brasília, lido em UTC
+  function janela(ano) { return [Date.parse(ano + "-11-16T00:00:00-03:00"), Date.parse(ano + "-11-23T00:00:00-03:00")]; }
+  function estado(t) {
+    if (t >= ABRE) return { nome: "abriu" };
+    var ano = sp(t).getUTCFullYear(), j = janela(ano);
+    if (t >= j[0] && t < j[1]) return { nome: "aberta", ano: ano, fim: j[1] };
+    return { nome: "lacrada", reabre: Math.min(t < j[0] ? j[0] : janela(ano + 1)[0], ABRE) };
+  }
+  function falta(ms) {
+    var s = Math.max(0, Math.floor(ms / 1000)), d = Math.floor(s / 86400);
+    return d.toLocaleString("pt-BR") + (d === 1 ? " dia " : " dias ") + p2(Math.floor(s % 86400 / 3600)) + ":" + p2(Math.floor(s % 3600 / 60)) + ":" + p2(s % 60);
+  }
+  function dataBR(t) { var d = sp(t); return p2(d.getUTCDate()) + "/" + p2(d.getUTCMonth() + 1) + "/" + d.getUTCFullYear(); }
+  function horaBR(t) { var d = sp(t); return d.getUTCHours() + "h" + p2(d.getUTCMinutes()); }
+
+  /* ----- memória no celular. Um ritmo = cinco toques: t (quando começou, ms), d (quanto durou, ms), y (altura no círculo, 0 em cima) ----- */
+  function ler() {
+    var o = {};
+    try { o = JSON.parse(localStorage.getItem(CHAVE)) || {}; } catch (e) {}
+    Object.keys(o).forEach(function (a) {                              // formato antigo: só os instantes
+      if (!o[a].n && o[a].t) o[a].n = o[a].t.map(function (ms) { return { t: ms, d: 60, y: 0.5 }; });
+      if (!o[a].n || o[a].n.length !== N) { delete o[a]; return; }
+      o[a].n.forEach(function (n) { if (!(n.y >= 0 && n.y < 1)) n.y = 0.5; });
+    });
+    return o;
+  }
+  function gravar(o) { try { localStorage.setItem(CHAVE, JSON.stringify(o)); } catch (e) {} }
+
+  /* ----- som: nota afinada, na faixa que alto-falante de celular reproduz ----- */
+  var AC, saida, ruido, mudo = false;
+  var NOTAS = [523.25, 440, 392, 329.63, 293.66, 261.63];              // de cima para baixo: dó5 lá4 sol4 mi4 ré4 dó4
+  try { mudo = localStorage.getItem(CHAVE_MUDO) === "1"; } catch (e) {}
+  function freq(y) { return NOTAS[Math.min(NOTAS.length - 1, Math.max(0, Math.floor(y * NOTAS.length))) || 0]; }
+  function audio() {
+    try {
+      if (!AC) {
+        var C = window.AudioContext || window.webkitAudioContext;
+        if (!C) return null;
+        AC = new C();
+        saida = AC.createDynamicsCompressor(); saida.connect(AC.destination);
+        try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) {}   // iPhone: toca mesmo no silencioso
+      }
+      if (AC.state !== "running" && AC.resume) { var p = AC.resume(); if (p && p.catch) p.catch(function () {}); }
+      return AC;
+    } catch (e) { return null; }
+  }
+  // O celular só libera o áudio no fim de um toque: destrava em todo gesto, por garantia.
+  ["touchend", "pointerup", "click", "keydown"].forEach(function (ev) {
+    document.addEventListener(ev, function () { if (!mudo) audio(); }, true);
+  });
+  // Toca uma nota. Sem `dur`, ela soa até a função devolvida ser chamada (ou por SEGURA_MAX).
+  function nota(f, quando, dur) {
+    if (mudo || !audio()) return function () {};
+    try {
+      var t = AC.currentTime + (quando || 0), g = AC.createGain(), o = AC.createOscillator(), o2 = AC.createOscillator(), g2 = AC.createGain();
+      var fim = t + (dur == null ? SEGURA_MAX / 1000 : Math.max(0.07, dur));
+      o.type = "triangle"; o.frequency.setValueAtTime(f * 1.5, t); o.frequency.exponentialRampToValueAtTime(f, t + 0.045);
+      o2.type = "sine"; o2.frequency.setValueAtTime(f * 2, t); g2.gain.value = 0.3;
+      g.gain.setValueAtTime(0, t); g.gain.setTargetAtTime(0.95, t, 0.004); g.gain.setTargetAtTime(0.42, t + 0.03, 0.07);
+      g.gain.setTargetAtTime(0, fim, 0.05);
+      o.connect(g); o2.connect(g2); g2.connect(g); g.connect(saida);
+      o.start(t); o2.start(t); o.stop(fim + 0.6); o2.stop(fim + 0.6);
+      if (!ruido) {                                                    // estalo de ataque
+        var n = Math.floor(AC.sampleRate * 0.03), d; ruido = AC.createBuffer(1, n, AC.sampleRate); d = ruido.getChannelData(0);
+        for (var i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+      }
+      var s = AC.createBufferSource(), hp = AC.createBiquadFilter(), gr = AC.createGain();
+      s.buffer = ruido; hp.type = "highpass"; hp.frequency.value = 1200; gr.gain.value = 0.3;
+      s.connect(hp); hp.connect(gr); gr.connect(saida); s.start(t);
+      var solta = false;
+      return function () {
+        if (solta) return; solta = true;
+        try { g.gain.setTargetAtTime(0, Math.max(AC.currentTime, t + 0.05), 0.05); } catch (e) {}
+      };
+    } catch (e) { return function () {}; }
+  }
+  var tocando = [];
+  function tocar(r, svg) {
+    tocando.forEach(clearTimeout); tocando = [];
+    r.n.forEach(function (n, i) {
+      nota(freq(n.y), n.t / 1000 + 0.06, n.d / 1000);
+      if (!svg) return;
+      tocando.push(setTimeout(function () { var m = svg.querySelector('[data-i="' + i + '"]'); if (m) m.classList.add("soa"); }, n.t + 60));
+      tocando.push(setTimeout(function () { var m = svg.querySelector('[data-i="' + i + '"]'); if (m) m.classList.remove("soa"); }, n.t + 60 + Math.max(140, n.d)));
+    });
+  }
+  function pintaMudo() { $("mudo").textContent = mudo ? "🔇" : "🔊"; $("mudo").setAttribute("aria-label", mudo ? "Ligar o som" : "Desligar o som"); }
+  $("mudo").onclick = function () { mudo = !mudo; try { localStorage.setItem(CHAVE_MUDO, mudo ? "1" : "0"); } catch (e) {} pintaMudo(); };
+  pintaMudo();
+  setTimeout(function () { if (!mudo) audio(); }, 0);
+
+  /* ----- desenho: o tempo vai da esquerda para a direita, a altura é onde o dedo tocou, o comprimento é quanto segurou ----- */
+  function tracado(r, L, A, mx, my) {
+    var W = L - 2 * mx, k = L / 320, ult = r.n[r.n.length - 1], total = ult.t + ult.d, esc = W / Math.max(total, 2200), x0 = mx + (W - total * esc) / 2;
+    return r.n.map(function (n, i) {
+      var prox = r.n[i + 1], larg = n.d * esc;
+      if (prox) larg = Math.min(larg, (prox.t - n.t) * esc - 16 * k);
+      if (larg < 9 * k) larg = 0;                                      // toque curto vira bolinha
+      return { x: x0 + n.t * esc, x2: x0 + n.t * esc + larg, y: my + n.y * (A - 2 * my) };
+    });
+  }
+  function desenha(svg, r) {
+    var NS = "http://www.w3.org/2000/svg", L = 320, A = 150, pts = tracado(r, L, A, 26, 26);
+    function el(nome, at) { var e = document.createElementNS(NS, nome); Object.keys(at).forEach(function (k) { e.setAttribute(k, at[k]); }); svg.appendChild(e); return e; }
+    svg.setAttribute("viewBox", "0 0 " + L + " " + A);
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    el("path", { "class": "fio", pathLength: 1, d: pts.map(function (p, i) {
+      return (i ? "L" : "M") + p.x.toFixed(1) + " " + p.y.toFixed(1) + (p.x2 > p.x ? " L" + p.x2.toFixed(1) + " " + p.y.toFixed(1) : "");
+    }).join(" ") });
+    pts.forEach(function (p, i) {
+      if (p.x2 > p.x) el("line", { "class": "marca", "data-i": i, x1: p.x.toFixed(1), y1: p.y.toFixed(1), x2: p.x2.toFixed(1), y2: p.y.toFixed(1) });
+      else el("circle", { "class": "marca ponto", "data-i": i, cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: 7.5 });
+    });
+  }
+
+  /* ----- salvar: um cartão em imagem com o desenho do ritmo ----- */
+  function cartao(r, ano) {
+    var c = document.createElement("canvas"), x = c.getContext("2d"), L = 1080, A = 1350, py = 400, pa = 560;
+    var F = 'system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif', PAPEL = "#f6f3ec", LARANJA = "#f26b21", APAGADO = "#8f8a7e";
+    c.width = L; c.height = A;
+    function duasCores(t1, t2, t3, y) {                                // texto centrado com o meio em laranja
+      var w1 = x.measureText(t1).width, w2 = x.measureText(t2).width, w3 = x.measureText(t3).width, xi = (L - w1 - w2 - w3) / 2;
+      x.textAlign = "left";
+      x.fillStyle = PAPEL; x.fillText(t1, xi, y); x.fillStyle = LARANJA; x.fillText(t2, xi + w1, y); x.fillStyle = PAPEL; x.fillText(t3, xi + w1 + w2, y);
+      x.textAlign = "center";
+    }
+    x.fillStyle = "#111"; x.fillRect(0, 0, L, A);
+    x.font = "900 104px " + F; duasCores("2026 ", "→", " 2036", 190);
+    x.font = "900 54px " + F; x.fillStyle = PAPEL; x.fillText("Cápsula do tempo", L / 2, 270);
+    x.font = "400 32px " + F; x.fillStyle = APAGADO; x.fillText("no quarto do Landim", L / 2, 322);
+    x.fillStyle = "#171717"; x.fillRect(0, py, L, pa);
+    var pts = tracado(r, L, pa, 110, 110);
+    x.lineCap = "round"; x.lineJoin = "round";
+    x.strokeStyle = PAPEL; x.lineWidth = 10; x.beginPath();
+    pts.forEach(function (p, i) { if (i) x.lineTo(p.x, py + p.y); else x.moveTo(p.x, py + p.y); if (p.x2 > p.x) x.lineTo(p.x2, py + p.y); });
+    x.stroke();
+    x.strokeStyle = LARANJA; x.fillStyle = LARANJA; x.lineWidth = 44;
+    pts.forEach(function (p) {
+      x.beginPath();
+      if (p.x2 > p.x) { x.moveTo(p.x, py + p.y); x.lineTo(p.x2, py + p.y); x.stroke(); }
+      else { x.arc(p.x, py + p.y, 25, 0, Math.PI * 2); x.fill(); }
+    });
+    x.font = "900 60px " + F; duasCores("Meu ritmo de ", String(ano), "", 1075);
+    x.font = "400 32px " + F; x.fillStyle = APAGADO; x.fillText(dataBR(r.em) + ", às " + horaBR(r.em), L / 2, 1130);
+    x.font = "900 38px " + F; x.fillStyle = LARANJA; x.fillText("БУДУЩЕЕ УЖЕ ЗДЕСЬ", L / 2, 1250);
+    x.font = "400 26px " + F; x.fillStyle = APAGADO; x.fillText("o futuro já chegou", L / 2, 1292);
+    return c;
+  }
+  // No iPhone abre a folha de compartilhar (que tem "Salvar imagem"); nos outros, baixa o arquivo.
+  function salvar(r, ano, aviso) {
+    var nome = "capsula-ritmo-" + ano + ".png", blob, arq = null;
+    function diz(t) { if (aviso) aviso.textContent = t; }
+    function baixa() {
+      var a = document.createElement("a"), url = URL.createObjectURL(blob);
+      a.href = url; a.download = nome; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+      diz("Imagem salva nos downloads.");
+    }
+    try {
+      var bin = atob(cartao(r, ano).toDataURL("image/png").split(",")[1]), n = bin.length, bytes = new Uint8Array(n);
+      while (n--) bytes[n] = bin.charCodeAt(n);
+      blob = new Blob([bytes], { type: "image/png" });
+      try { arq = new File([blob], nome, { type: "image/png" }); } catch (e) {}
+      var iphone = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      if (iphone && arq && navigator.canShare && navigator.canShare({ files: [arq] })) {
+        navigator.share({ files: [arq], title: "Meu ritmo de " + ano }).then(function () { diz("Pronto."); }, function (e) { if (!e || e.name !== "AbortError") baixa(); });
+      } else baixa();
+    } catch (e) { diz("Este navegador não deixou gerar a imagem."); }
+  }
+
+  /* ----- o círculo: dedo, mouse ou teclado ----- */
+  function ligaPad(pad, desce, sobe) {
+    function altura(e) { var r = pad.getBoundingClientRect(), y = (e.clientY - r.top) / r.height; return y >= 0 && y < 1 ? y : y >= 1 ? 0.999 : 0; }
+    pad.addEventListener("pointerdown", function (e) {
+      e.preventDefault();
+      try { pad.setPointerCapture(e.pointerId); } catch (x) {}
+      var r = pad.getBoundingClientRect(), d = document.createElement("i");
+      d.className = "dedo"; d.style.left = (e.clientX - r.left) + "px"; d.style.top = (e.clientY - r.top) + "px";
+      pad.appendChild(d); setTimeout(function () { if (d.parentNode) d.parentNode.removeChild(d); }, 650);
+      desce("p" + e.pointerId, altura(e));
+    });
+    ["pointerup", "pointercancel", "lostpointercapture"].forEach(function (ev) {
+      pad.addEventListener(ev, function (e) { sobe("p" + e.pointerId); });
+    });
+    pad.addEventListener("keydown", function (e) { if ((e.key === " " || e.key === "Enter") && !e.repeat) { e.preventDefault(); desce("tecla", 0.5); } });
+    pad.addEventListener("keyup", function (e) { if (e.key === " " || e.key === "Enter") { e.preventDefault(); sobe("tecla"); } });
+    pad.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+  }
+  function vibra() { try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) {} }
+
+  /* ----- gravação: cinco toques ----- */
+  var notas = [], ativas = {}, ocioso, t0 = 0, anoAberto = 0, DICA = $("dica").textContent;
+  function quantasAtivas() { return Object.keys(ativas).length; }
+  function zera(msg) {
+    Object.keys(ativas).forEach(function (id) { clearTimeout(ativas[id].limite); ativas[id].soltar(); });
+    notas = []; ativas = {}; clearTimeout(ocioso);
+    [].forEach.call($("pontos").children, function (p) { p.classList.remove("on"); });
+    $("pad").classList.remove("bate");
+    $("padtxt").textContent = "Toque " + N + " vezes";
+    $("dica").textContent = msg || DICA;
+  }
+  function desce(id, y) {
+    if (notas.length >= N || ativas[id]) return;
+    var agoraT = performance.now();
+    if (!notas.length) t0 = agoraT;
+    var n = { t: Math.round(agoraT - t0), d: 0, y: Math.round(y * 1000) / 1000 };
+    notas.push(n); clearTimeout(ocioso);
+    ativas[id] = { n: n, ini: agoraT, soltar: nota(freq(y)), limite: setTimeout(function () { sobe(id); }, SEGURA_MAX) };
+    vibra();
+    $("pad").classList.add("bate");
+    $("pontos").children[notas.length - 1].classList.add("on");
+    var faltam = N - notas.length;
+    $("padtxt").textContent = faltam ? (faltam === 1 ? "Falta 1" : "Faltam " + faltam) : "Pronto";
+  }
+  function sobe(id) {
+    var a = ativas[id];
+    if (!a) return;
+    delete ativas[id]; clearTimeout(a.limite);
+    a.n.d = Math.max(40, Math.round(performance.now() - a.ini)); a.soltar();
+    if (quantasAtivas()) return;
+    $("pad").classList.remove("bate");
+    if (notas.length < N) { ocioso = setTimeout(function () { zera("Parou no meio. Comece de novo."); }, 4000); return; }
+    var r = { n: notas.slice(), em: agora() }, tudo = ler();
+    tudo[anoAberto] = r; gravar(tudo);
+    setTimeout(function () { mostraFeito(r, true); tocar(r, $("desenho")); }, 500);
+  }
+  ligaPad($("pad"), desce, sobe);
+
+  function mostraFeito(r, novo) {
+    $("gravar").hidden = true; $("feito").hidden = false;
+    $("desenho").classList.toggle("nasce", !!novo);
+    desenha($("desenho"), r);
+    $("quando").textContent = "Guardado neste celular em " + dataBR(r.em) + ", às " + horaBR(r.em) + ".";
+    $("ouvir").onclick = function () { tocar(r, $("desenho")); };
+    $("salvo").textContent = "";
+    $("salvar").onclick = function () { salvar(r, anoAberto, $("salvo")); };
+  }
+  $("refazer").onclick = function () { tocando.forEach(clearTimeout); $("feito").hidden = true; $("gravar").hidden = false; zera(); };
+
+  /* ----- 2036: o círculo vira instrumento ----- */
+  var livres = {};
+  ligaPad($("pad-livre"),
+    function (id, y) { if (livres[id]) return; livres[id] = nota(freq(y)); vibra(); $("pad-livre").classList.add("bate"); },
+    function (id) { if (!livres[id]) return; livres[id](); delete livres[id]; if (!Object.keys(livres).length) $("pad-livre").classList.remove("bate"); });
+
+  /* ----- ritmos guardados ----- */
+  function lista(pulaAno) {
+    var tudo = ler(), anos = Object.keys(tudo).filter(function (a) { return +a !== pulaAno; }).sort();
+    $("meus").hidden = !anos.length;
+    $("lista").innerHTML = "";
+    anos.forEach(function (a) {
+      var li = document.createElement("li"), ano = document.createElement("span"), b = document.createElement("button");
+      var mini = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      ano.className = "a"; ano.textContent = a;
+      mini.setAttribute("class", "desenho"); mini.setAttribute("role", "img"); mini.setAttribute("aria-label", "Desenho do ritmo de " + a); desenha(mini, tudo[a]);
+      b.type = "button"; b.textContent = "▶"; b.setAttribute("aria-label", "Ouvir o ritmo de " + a); b.onclick = function () { tocar(tudo[a], mini); };
+      var g = document.createElement("button");
+      g.type = "button"; g.textContent = "⬇"; g.setAttribute("aria-label", "Salvar o desenho de " + a); g.onclick = function () { salvar(tudo[a], a); };
+      li.appendChild(ano); li.appendChild(mini); li.appendChild(b); li.appendChild(g); $("lista").appendChild(li);
+    });
+  }
+
+  /* ----- tela conforme o dia ----- */
+  var nomeAtual = "";
+  function monta() {
+    var e = estado(agora());
+    if (e.nome + (e.ano || "") === nomeAtual) return e;
+    nomeAtual = e.nome + (e.ano || "");
+    ["aberta", "lacrada", "abriu"].forEach(function (id) { $("tela-" + id).hidden = id !== e.nome; });
+    if (e.nome === "aberta") {
+      anoAberto = e.ano;
+      [].forEach.call(document.querySelectorAll(".ano"), function (s) { s.textContent = e.ano; });
+      $("regra").textContent = "Lacra em " + dataBR(e.fim - 1000).slice(0, 5) + ", às 23h59. Reabre todo ano, de 16 a 22 de novembro.";
+      var r = ler()[e.ano];
+      if (r) mostraFeito(r, false); else { $("feito").hidden = true; $("gravar").hidden = false; zera(); }
+      lista(e.ano);
+    } else {
+      if (e.nome === "lacrada") {
+        $("reabre-rotulo").textContent = e.reabre >= ABRE ? "Abre de vez em " + dataBR(e.reabre) + ". Faltam" : "Reabre em " + dataBR(e.reabre) + ". Faltam";
+      }
+      lista(0);
+    }
+    return e;
+  }
+  function tique() {
+    var t = agora(), e = monta();
+    $("conta").innerHTML = e.nome === "abriu" ? "Aberta desde <b>" + dataBR(ABRE) + "</b>" : "Abre em <b>" + falta(ABRE - t) + "</b>";
+    if (e.nome === "lacrada") $("reabre").textContent = falta(e.reabre - t);
+  }
+  tique(); setInterval(tique, 1000);
+})();
+</script>
 </body>
 </html>
