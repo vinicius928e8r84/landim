@@ -4,28 +4,601 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Trilha da missão</title>
+<title>🎵 Lado A · Trilha da missão</title>
 <style>
+  :root { --ink: #111; --paper: #f6f3ec; --or: #f26b21; --mute: #cfcabd; }
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
-         background: #111; color: #f6f3ec; font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
-         text-align: center; padding: 32px 24px; }
-  .emoji { font-size: 72px; line-height: 1; }
-  h1 { font-size: 34px; font-weight: 900; margin: 20px 0 8px; letter-spacing: -0.5px; }
-  h1 span { color: #f26b21; }
-  p { font-size: 18px; line-height: 1.5; margin: 8px auto; max-width: 28em; color: #cfcabd; }
-  .ru { margin-top: 28px; font-weight: 900; color: #f26b21; font-size: 22px; }
-  a { color: #f26b21; }
-  ul { list-style: none; padding: 0; font-size: 20px; line-height: 2; }
+  body { margin: 0; background: var(--ink); color: var(--paper);
+         font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; line-height: 1.45; }
+  main { max-width: 560px; margin: 0 auto; padding: 34px 22px 60px; text-align: center; }
+  [hidden] { display: none !important; }
+  .disco { width: 230px; height: 230px; margin: 0 auto 22px; border-radius: 50%;
+           background:
+             radial-gradient(circle, var(--paper) 0 4%, var(--or) 4.5% 27%, transparent 27.5%),
+             repeating-radial-gradient(circle, #1f1f1f 0 3px, #050505 3px 6px);
+           border: 3px solid #333; animation: gira 4s linear infinite; position: relative; }
+  .disco::after { content: "LANDIM"; position: absolute; left: 0; right: 0; top: 33%;
+                  font-weight: 900; font-size: 13px; letter-spacing: 2px; color: var(--ink); }
+  .disco.mini { width: 120px; height: 120px; margin-bottom: 16px; }
+  .disco.mini::after { content: "DJ"; top: 31%; font-size: 11px; }
+  /* com o painel ligado, o rótulo do disco vira a capa da música */
+  .disco.capa::before { content: ""; position: absolute; inset: 23%; border-radius: 50%; background: var(--capa) center / cover; }
+  .disco.capa::after { content: ""; left: calc(50% - 6px); right: auto; top: calc(50% - 6px); width: 12px; height: 12px;
+                       border-radius: 50%; background: var(--ink); border: 2px solid var(--paper); }
+  .disco.parado { animation-play-state: paused; }
+  .disco.menor { width: 170px; height: 170px; margin-bottom: 16px; }
+  @keyframes gira { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .disco { animation: none; } }
+  .lado { color: var(--or); font-weight: 900; letter-spacing: 2px; font-size: 14px; }
+  h1 { font-size: 30px; font-weight: 900; margin: 4px 0 6px; letter-spacing: -0.5px; }
+  p { color: var(--mute); font-size: 16px; margin: 6px 0; }
+  .btn { display: none; width: 100%; text-decoration: none; border-radius: 999px; background: var(--or); color: var(--ink);
+         border: 2px solid var(--or); font: inherit; font-weight: 900; font-size: 19px; padding: 15px; margin: 20px 0 6px; cursor: pointer; }
+  .btn.on { display: block; }
+  .btn.sec { background: none; color: var(--or); font-size: 16px; padding: 12px; margin-top: 12px; }
+  .dica { font-size: 14px; margin: 0; }
+  ol, ul { list-style: none; padding: 0; margin: 0; text-align: left; }
+  #faixas { counter-reset: faixa; margin-top: 26px; }
+  #faixas li { counter-increment: faixa; border-bottom: 1px solid #2a2a2a; }
+  #faixas a { display: flex; align-items: baseline; gap: 12px; padding: 13px 2px; color: var(--paper); text-decoration: none; }
+  #faixas a::before { content: counter(faixa, decimal-leading-zero); color: var(--or); font-weight: 900;
+                      font-variant-numeric: tabular-nums; }
+  #faixas b, .linha b { display: block; font-size: 17px; }
+  #faixas small, .linha small { color: var(--mute); font-size: 14px; }
+  #faixas a::after { content: "▶"; margin-left: auto; color: var(--mute); font-size: 12px; }
+  .ru { color: var(--or); font-weight: 900; margin-top: 28px; font-size: 20px; }
+  .discreto { display: inline-block; margin-top: 18px; color: #77736a; font-size: 13px; }
+  .rot { color: var(--or); font-weight: 900; letter-spacing: 2px; font-size: 12px; text-align: left; margin: 26px 0 4px; }
+
+  /* zona da festa: painel, botão do Jam e pedido de música */
+  #zona { display: flex; flex-direction: column; }
+  #zona.direto #fila, #zona.direto #dica { order: 9; }
+  a.linha { text-decoration: none; }
+  .linha b, .linha small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .linha.so-texto b { white-space: normal; font-size: 15px; }
+  .linha small:empty { display: none; }
+  .linha .abre { color: var(--or); border: 1.5px solid var(--or); border-radius: 999px; font-weight: 900; font-size: 13px; padding: 4px 10px; white-space: nowrap; }
+  .linha.so-texto { grid-template-columns: minmax(0, 1fr) auto; }
+
+  /* painel da caixinha */
+  .agora { margin-top: 2px; }
+  .agora .rot { text-align: center; margin: 0; }
+  .agora b { display: block; font-size: 24px; font-weight: 900; letter-spacing: -0.4px; line-height: 1.15; margin-top: 2px; }
+  .agora small { color: var(--mute); font-size: 16px; }
+  .prog { height: 4px; background: #2a2a2a; border-radius: 4px; margin: 12px 0 0; overflow: hidden; }
+  .prog i { display: block; height: 100%; width: 0; background: var(--or); }
+  .campo { width: 100%; background: #1c1c1c; border: 1px solid #3a3a3a; border-radius: 12px; color: var(--paper); font: inherit;
+           font-size: 16px; padding: 14px; margin-top: 8px; }
+  .campo:focus { outline: 2px solid var(--or); outline-offset: 1px; }
+  .campo.pedir { border: 2px solid var(--or); border-radius: 999px; padding: 15px 20px; font-size: 18px; margin-top: 20px; text-align: center; }
+  .campo.pedir::placeholder { color: var(--or); font-weight: 900; opacity: 1; }
+  .campo.pedir:focus::placeholder { color: #77736a; font-weight: 400; }
+  .linha { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%; text-align: left;
+           background: none; border: 0; border-bottom: 1px solid #2a2a2a; color: var(--paper); font: inherit; padding: 9px 2px; }
+  button.linha { cursor: pointer; }
+  .linha img, .linha .semcapa { width: 44px; height: 44px; border-radius: 6px; background: #2a2a2a; object-fit: cover; display: block; }
+  .linha .mais { color: var(--ink); background: var(--or); border-radius: 999px; font-weight: 900; font-size: 13px; padding: 5px 11px; }
+  .linha .n { color: var(--or); font-weight: 900; font-variant-numeric: tabular-nums; text-align: center; }
+  #prox .linha { grid-template-columns: 26px 44px minmax(0, 1fr); }
+  .aviso { min-height: 1.5em; font-weight: 900; color: var(--or); margin: 12px 0 0; }
+  .aviso.erro { color: var(--paper); }
+
+  /* modo DJ */
+  .estado { display: inline-block; border: 2px solid #444; border-radius: 999px; padding: 5px 14px; font-weight: 900; font-size: 14px;
+            color: var(--mute); margin: 10px 0 4px; }
+  .estado.aberto { border-color: var(--or); color: var(--or); }
+  .passos { text-align: left; margin: 18px 0 0; padding: 14px 16px; border: 1px solid #2a2a2a; border-radius: 14px; }
+  .passos p { font-size: 15px; margin: 4px 0; }
+  .passos b { color: var(--paper); }
+  .passos a { color: var(--or); font-weight: 900; }
+  details { text-align: left; margin-top: 22px; border-top: 1px solid #2a2a2a; padding-top: 14px; }
+  summary { color: var(--mute); font-weight: 900; cursor: pointer; }
+  details p { font-size: 14px; }
 </style>
 </head>
 <body>
 <main>
-<div class="emoji">🎵</div>
-<h1>Lado A · <span>Trilha da missão</span></h1>
-<p>O disco ainda está sendo prensado.</p>
-<p>Volte daqui a pouco e escaneie de novo.</p>
-<p class="ru">СКОРО · em breve</p>
+  <section id="trilha">
+    <div class="disco" id="disco"></div>
+    <div class="lado">LADO A</div>
+    <h1>Trilha da missão</h1>
+    <p id="sub">A trilha sonora da viagem até a lua-vinil. Toque numa faixa pra ouvir.</p>
+
+    <div id="zona">
+      <div id="painel" hidden>
+        <div class="agora">
+          <div class="rot">TOCANDO AGORA NA CAIXINHA</div>
+          <b id="pnome"></b>
+          <small id="partista"></small>
+          <div class="prog"><i id="pprog"></i></div>
+        </div>
+      </div>
+      <a class="btn" id="fila"></a>
+      <p class="dica" id="dica" hidden></p>
+      <div id="pedido" hidden>
+        <input class="campo pedir" id="q" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false"
+               placeholder="＋ Pedir uma música" aria-label="Pedir uma música, ou colar o link do Jam">
+        <ul id="res"></ul>
+        <p class="aviso" id="pmsg" role="status" aria-live="polite"></p>
+      </div>
+      <div id="proxbloco" hidden>
+        <div class="rot">A SEGUIR</div>
+        <ol id="prox"></ol>
+      </div>
+    </div>
+
+    <a class="btn sec" id="abrir" href="#dj">🎛 Tô no som: abrir um Jam</a>
+    <a class="btn" id="play" target="_blank" rel="noopener">▶ Ouvir a playlist inteira</a>
+    <div class="rot" id="rotfaixas" hidden>A CARA DO LANDIM</div>
+    <ol id="faixas"></ol>
+    <p class="ru">ПОЕХАЛИ! 🚀</p>
+    <a class="discreto" id="djlink" href="#dj" hidden>modo DJ</a>
+  </section>
+
+  <section id="dj" hidden>
+    <div class="disco mini"></div>
+    <div class="lado">РЕЖИМ ДИДЖЕЯ</div>
+    <h1>Modo DJ</h1>
+    <p>Quem tá no som manda aqui. Só não vale tocar a mesma música três vezes.</p>
+    <div class="estado" id="estado">Conferindo…</div>
+
+    <div class="passos">
+      <p><b>1.</b> No <a href="https://open.spotify.com/">Spotify</a>, abre um Jam e copia o link de convite.</p>
+      <p><b>2.</b> Volta aqui e toca em colar. Pronto.</p>
+    </div>
+    <button class="btn on" id="colar" type="button">📋 Colar link do Jam</button>
+    <input class="campo" id="campo" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false"
+           placeholder="ou cola o link aqui" aria-label="Link do Jam">
+    <p class="aviso" id="aviso" role="status" aria-live="polite"></p>
+    <button class="btn sec" id="fechar" type="button">Encerrar o Jam</button>
+
+    <div id="djpainel" hidden>
+      <div class="rot">PAINEL DA CAIXINHA</div>
+      <p style="text-align:left;font-size:15px" id="djpaineltxt"></p>
+      <a class="btn sec on" id="conectar">Conectar o Spotify que tá na caixinha</a>
+    </div>
+
+    <details>
+      <summary>Playlist reserva</summary>
+      <p>Aparece no lugar do Jam quando a caixinha tá descansando. Cola o link de convite de uma playlist colaborativa do Spotify.</p>
+      <input class="campo" id="campolista" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false"
+             placeholder="link da playlist colaborativa" aria-label="Link da playlist reserva">
+      <button class="btn sec on" id="salvalista" type="button">Salvar playlist reserva</button>
+    </details>
+
+    <a class="discreto" href="#">← voltar pra trilha</a>
+  </section>
 </main>
+
+<script src="../config.js"></script>
+<script>
+  var cfg = window.LANDIM || {};
+  var $ = function (id) { return document.getElementById(id); };
+
+  // ---------- faixas ----------
+  var FAIXAS = [
+    ["Infinita Highway", "Engenheiros do Hawaii"],
+    ["O Vencedor", "Los Hermanos"],
+    ["Somos Quem Podemos Ser", "Engenheiros do Hawaii"],
+    ["Além do Que Se Vê", "Los Hermanos"],
+    ["Terra de Gigantes", "Engenheiros do Hawaii"],
+    ["Último Romance", "Los Hermanos"],
+    ["Lunik 9", "Gilberto Gil"],
+    ["Pra Ser Sincero", "Engenheiros do Hawaii"]
+  ];
+  FAIXAS.forEach(function (f) {
+    var li = document.createElement("li");
+    var a = document.createElement("a");
+    a.href = "https://www.youtube.com/results?search_query=" + encodeURIComponent(f[0] + " " + f[1]);
+    a.target = "_blank";
+    a.rel = "noopener";
+    var d = document.createElement("div");
+    var t = document.createElement("b"); t.textContent = f[0];
+    var s = document.createElement("small"); s.textContent = f[1];
+    d.appendChild(t); d.appendChild(s);
+    a.appendChild(d);
+    li.appendChild(a);
+    $("faixas").appendChild(li);
+  });
+
+  // ---------- configuração da festa ----------
+  // O link do Jam fica guardado num tópico do ntfy.sh, que a página lê ao abrir.
+  // Quem troca o link é o modo DJ (#dj). O que é salvo lá some sozinho depois de 12 horas.
+  var TOPICO = "https://ntfy.sh/landim-trilha-65c4addcc4a4d12a";
+  // Endereço do servidor do painel da caixinha (tocando agora, a seguir e pedir música).
+  // Vazio = painel desligado: a página fica só com o botão do Jam.
+  var PAINEL = "";
+  var FIM_DA_FESTA = new Date("2026-11-23T12:00:00-03:00");
+  var VALIDADE = 12 * 60 * 60 * 1000;
+  var HOSTS = ["spotify.link", "open.spotify.com", "spotify.app.link", "link.tospotify.com"];
+  var CHAVE = "trilha_fila";
+
+  // Só para testar na própria máquina: 127.0.0.1:8765/trilha/?api=http://127.0.0.1:8787
+  if (/^(127\.0\.0\.1|localhost)$/.test(location.hostname)) {
+    var apiTeste = new URLSearchParams(location.search).get("api");
+    if (apiTeste) PAINEL = apiTeste;
+  }
+
+  var estado = { jam: "", lista: "", t: 0 };
+  var caixinha = null;          // o que o painel devolveu por último
+  var depois = new Date() > FIM_DA_FESTA;
+  var teste = false, demo = false;
+  var ultimaBusca = 0;
+
+  // Só aceita link https do Spotify. Qualquer outra coisa vira vazio.
+  function limpa(u) {
+    try {
+      var url = new URL(String(u || "").trim());
+      return url.protocol === "https:" && HOSTS.indexOf(url.hostname) !== -1 ? url.href : "";
+    } catch (e) { return ""; }
+  }
+  // Acha o primeiro link do Spotify dentro de um texto colado.
+  function extrai(texto) {
+    var achados = String(texto || "").match(/https:\/\/[^\s"'<>]+/g) || [];
+    for (var i = 0; i < achados.length; i++) { var u = limpa(achados[i]); if (u) return u; }
+    return "";
+  }
+  // Capa só de endereço https; o resto fica sem imagem.
+  function capaOk(u) { return /^https:\/\/[a-z0-9.-]+\//i.test(String(u || "")) ? u : ""; }
+  function guarda() { try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch (e) {} }
+  function lembra() {
+    try {
+      var c = JSON.parse(localStorage.getItem(CHAVE) || "null");
+      if (c && Date.now() - c.t < VALIDADE) estado = { jam: limpa(c.jam), lista: limpa(c.lista), t: c.t };
+    } catch (e) {}
+  }
+
+  // ---------- desenha a página ----------
+  // tipo: "fila" = botão que põe direto na fila; "abre" = link que abre o Spotify; vazio = só mostra.
+  function linha(f, extra, tipo) {
+    var el = document.createElement(tipo === "fila" ? "button" : tipo === "abre" ? "a" : "div");
+    if (tipo === "fila") el.type = "button";
+    if (tipo === "abre") el.href = f.link;
+    el.className = "linha";
+    if (extra && extra.n) { var n = document.createElement("span"); n.className = "n"; n.textContent = extra.n; el.appendChild(n); }
+    if (extra && extra.soTexto) el.classList.add("so-texto");
+    else {
+      var img;
+      if (capaOk(f.capa)) {
+        img = document.createElement("img"); img.src = f.capa; img.alt = ""; img.loading = "lazy";
+        img.onerror = function () { var v = document.createElement("span"); v.className = "semcapa"; this.replaceWith(v); };
+      }
+      else { img = document.createElement("span"); img.className = "semcapa"; }
+      el.appendChild(img);
+    }
+    var d = document.createElement("span");
+    var b = document.createElement("b"); b.textContent = f.nome;
+    var s = document.createElement("small"); s.textContent = f.artista;
+    d.appendChild(b); d.appendChild(s); el.appendChild(d);
+    if (tipo) { var m = document.createElement("span"); m.className = tipo === "fila" ? "mais" : "abre"; m.textContent = tipo === "fila" ? "＋ fila" : "abrir ↗"; el.appendChild(m); }
+    return el;
+  }
+
+  // O pedido entra direto na fila (sem app) quando o painel da caixinha está conectado e tocando.
+  function direto() { return !!(!depois && caixinha && caixinha.ligado && caixinha.tocando); }
+  // Lembra em qual Jam este aparelho já entrou. Se o link do Jam mudar, a página pede pra entrar de novo.
+  function noJam() { try { return !!estado.jam && localStorage.getItem("trilha_nojam") === estado.jam; } catch (e) { return false; } }
+
+  function pinta() {
+    var jam = depois ? "" : estado.jam, lista = depois ? "" : estado.lista;
+    var ligado = !depois && caixinha && caixinha.ligado && caixinha.tocando;
+    var fila = $("fila"), dica = $("dica"), play = $("play"), disco = $("disco");
+
+    // painel da caixinha
+    $("painel").hidden = !ligado;
+    $("sub").hidden = !!ligado;
+    $("rotfaixas").hidden = !ligado;
+    disco.classList.toggle("capa", !!(ligado && capaOk(caixinha.tocando.capa)));
+    disco.classList.toggle("parado", !!(ligado && !caixinha.tocando.tocando));
+    disco.classList.toggle("menor", !!ligado);
+    if (ligado) {
+      var t = caixinha.tocando;
+      if (capaOk(t.capa)) disco.style.setProperty("--capa", 'url("' + encodeURI(t.capa) + '")');
+      $("pnome").textContent = t.nome;
+      $("partista").textContent = t.artista;
+      var prox = $("prox"); prox.innerHTML = "";
+      (caixinha.proximas || []).slice(0, 5).forEach(function (f, i) {
+        var li = document.createElement("li"); li.appendChild(linha(f, { n: i + 1 })); prox.appendChild(li);
+      });
+    }
+    $("proxbloco").hidden = !ligado || !$("prox").children.length;
+    $("zona").classList.toggle("direto", !!ligado);
+
+    // campo de pedir música (e de colar o link do Jam)
+    var entrou = noJam();
+    $("pedido").hidden = depois;
+    $("q").placeholder = ligado || entrou ? "＋ Pedir uma música" : jam ? "② Buscar a música" : "Tá no som? Cola aqui o link do Jam";
+
+    // botão do Jam ou da playlist reserva
+    fila.classList.toggle("on", !!(jam || lista));
+    fila.classList.toggle("sec", !!(ligado || (jam && entrou)));
+    dica.hidden = !(jam || lista) || !!ligado;
+    if (jam) {
+      fila.href = jam;
+      fila.textContent = ligado ? "Abrir o Jam no Spotify" : entrou ? "✓ Você tá no Jam · abrir de novo" : "① Entrar no Jam da caixinha";
+      $("sub").textContent = "A caixinha tá ligada. Bota a sua.";
+      dica.textContent = entrou
+        ? "Busca a música aqui embaixo. No Spotify, toca nos três pontinhos dela e em “Adicionar à fila”."
+        : "Primeiro entra no Jam, depois busca a música. Sem o Jam, ela vai pra sua fila e não pra caixinha.";
+    } else if (lista) {
+      fila.href = lista;
+      fila.textContent = "＋ Deixar música pra próxima rodada";
+      $("sub").textContent = "A caixinha tá descansando.";
+      dica.textContent = "Põe a sua na playlist da festa. Ela puxa a próxima rodada.";
+    } else {
+      $("sub").textContent = depois
+        ? "Trilha fechada em 22/11/2026. Toque numa faixa pra ouvir."
+        : "A trilha sonora da viagem até a lua-vinil. Toque numa faixa pra ouvir.";
+    }
+    $("abrir").classList.toggle("on", !depois && !jam && !ligado);
+    $("djlink").hidden = depois || !(jam || ligado);
+    if (cfg.PLAYLIST_URL) {
+      play.href = cfg.PLAYLIST_URL;
+      play.classList.add("on");
+      play.classList.toggle("sec", !!(jam || lista || ligado));
+    }
+
+    // modo DJ
+    var e = $("estado");
+    e.classList.toggle("aberto", !!estado.jam);
+    e.textContent = estado.jam
+      ? "Jam aberto desde " + new Date(estado.t).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
+      : "Sem Jam aberto";
+    $("fechar").classList.toggle("on", !!estado.jam);
+    $("colar").textContent = estado.jam ? "📋 Colar link de um Jam novo" : "📋 Colar link do Jam";
+    if (document.activeElement !== $("campolista")) $("campolista").value = estado.lista;
+    $("djpainel").hidden = !PAINEL || depois;
+    if (PAINEL) {
+      $("conectar").href = PAINEL + "/login";
+      $("djpaineltxt").textContent = !caixinha ? "Conferindo o painel…"
+        : !caixinha.ligado ? "Ninguém conectou o Spotify ainda. Sem isso a página não mostra o que tá tocando nem aceita pedido."
+        : caixinha.tocando ? "Conectado. Tocando agora: " + caixinha.tocando.nome + "."
+        : "Conectado, mas não tem nada tocando. Dá play no Spotify.";
+      $("conectar").textContent = caixinha && caixinha.ligado ? "Trocar a conta do Spotify" : "Conectar o Spotify que tá na caixinha";
+    }
+  }
+
+  // barra de progresso anda sozinha entre uma consulta e outra
+  setInterval(function () {
+    if (!caixinha || !caixinha.tocando || !caixinha.tocando.duracao_ms) return;
+    var t = caixinha.tocando, ms = t.progresso_ms + (t.tocando ? Date.now() - caixinha.lido : 0);
+    $("pprog").style.width = Math.min(100, 100 * ms / t.duracao_ms) + "%";
+  }, 1000);
+
+  // ---------- link do Jam (ntfy) ----------
+  function busca() {
+    if (teste || depois) return Promise.resolve();
+    ultimaBusca = Date.now();
+    return fetch(TOPICO + "/json?poll=1&since=12h", { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function (txt) {
+        var ult = null;
+        txt.split("\n").forEach(function (l) {
+          if (!l.trim()) return;
+          try { var m = JSON.parse(l); if (m.event === "message") ult = m; } catch (e) {}
+        });
+        var novo = { jam: "", lista: "", t: 0 };
+        if (ult) {
+          try { var d = JSON.parse(ult.message); novo = { jam: limpa(d.jam), lista: limpa(d.lista), t: ult.time * 1000 }; } catch (e) {}
+        }
+        estado = novo; guarda(); pinta();
+      })
+      .catch(function () { /* sem internet ou serviço fora: fica com o que já tinha */ });
+  }
+
+  // ---------- painel da caixinha ----------
+  var DEMO = {
+    tocando: { nome: "Anna Júlia", artista: "Los Hermanos", capa: "", tocando: true, progresso_ms: 71000, duracao_ms: 213000 },
+    proximas: [
+      { nome: "Evidências", artista: "Chitãozinho & Xororó" }, { nome: "Toda Forma de Poder", artista: "Engenheiros do Hawaii" },
+      { nome: "Lunik 9", artista: "Gilberto Gil" }
+    ]
+  };
+  function api(caminho, opcoes) {
+    return fetch(PAINEL + caminho, opcoes).then(function (r) { return r.json(); });
+  }
+  function puxa() {
+    if (demo) { caixinha = { ligado: true, tocando: DEMO.tocando, proximas: DEMO.proximas, lido: caixinha ? caixinha.lido : Date.now() }; pinta(); return; }
+    if (!PAINEL || depois || teste) { caixinha = null; return; }
+    api("/estado", { cache: "no-store" })
+      .then(function (d) { d.lido = Date.now(); caixinha = d; pinta(); })
+      .catch(function () { /* painel fora do ar: a página segue com o botão do Jam */ });
+  }
+  setInterval(function () { if (!document.hidden) puxa(); }, 10000);
+
+  function pmsg(msg, erro) { var a = $("pmsg"); a.textContent = msg; a.classList.toggle("erro", !!erro); }
+  function noSpotify(texto) { return "https://open.spotify.com/search/" + encodeURIComponent(texto); }
+
+  // Procura a música. Com o painel conectado, a busca é a do próprio Spotify (pelo servidor).
+  // Sem o painel, usa a busca pública do iTunes, que aguenta erro de digitação e devolve capa.
+  var achados = {};
+  function procura(q) {
+    if (demo) {
+      var k = q.toLowerCase();
+      return Promise.resolve(FAIXAS.filter(function (f) { return (f[0] + " " + f[1]).toLowerCase().indexOf(k) !== -1; })
+        .map(function (f) { return { uri: "demo:" + f[0], nome: f[0], artista: f[1] }; }));
+    }
+    if (direto()) return api("/busca?q=" + encodeURIComponent(q));
+    var chave = q.toLowerCase();
+    if (achados[chave]) return Promise.resolve(achados[chave]);
+    return fetch("https://itunes.apple.com/search?entity=song&country=BR&limit=12&term=" + encodeURIComponent(q))
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (d) {
+        var vistos = {}, lista = [];
+        (d.results || []).forEach(function (r) {
+          var id = (r.trackName + "|" + r.artistName).toLowerCase();
+          if (!r.trackName || vistos[id]) return;
+          vistos[id] = 1;
+          lista.push({ nome: r.trackName, artista: r.artistName, capa: r.artworkUrl100 || "", link: noSpotify(r.trackName + " " + r.artistName) });
+        });
+        achados[chave] = lista;
+        return lista;
+      });
+  }
+  // Um apelido aleatório por aparelho, só para o servidor não deixar o mesmo celular entupir a fila.
+  function quem() {
+    var k = "trilha_quem", v = "";
+    try { v = localStorage.getItem(k) || ""; } catch (e) {}
+    if (!/^[a-z0-9]{12}$/.test(v)) {
+      v = ""; while (v.length < 12) v += Math.random().toString(36).slice(2);
+      v = v.slice(0, 12);
+      try { localStorage.setItem(k, v); } catch (e) {}
+    }
+    return v;
+  }
+  function pede(f) {
+    if (demo) { DEMO.proximas.push({ nome: f.nome, artista: f.artista }); return Promise.resolve({ ok: true }); }
+    return api("/pedir", { method: "POST", body: JSON.stringify({ uri: f.uri, quem: quem() }) });
+  }
+  var ERROS = {
+    sem_player: "A caixinha tá parada. Alguém precisa dar play no Spotify.",
+    limite: "Calma, DJ. Espera um pouquinho e pede de novo.",
+    fim: "A festa acabou. A fila fechou.",
+    desligado: "O painel tá desligado. Pede pelo Jam."
+  };
+  function limpaPedido() { $("q").value = ""; $("res").innerHTML = ""; $("q").blur(); }
+
+  // Uma linha de resultado: com o painel, põe direto na fila; sem ele, abre o Spotify já na música.
+  function resultado(f) {
+    var li = document.createElement("li"), el;
+    if (direto() && f.uri) {
+      el = linha(f, null, "fila");
+      el.addEventListener("click", function () {
+        pmsg("Mandando pra caixinha…");
+        pede(f).then(function (r) {
+          if (r && r.ok) { limpaPedido(); pmsg("“" + f.nome + "” entrou na fila! 🔊"); setTimeout(puxa, 1500); }
+          else pmsg(ERROS[r && r.erro] || "Não rolou. Tenta de novo.", true);
+        }).catch(function () { pmsg("Não rolou. Confere a internet e tenta de novo.", true); });
+      });
+    } else {
+      el = linha(f, f.soTexto ? { soTexto: true } : null, "abre");
+      el.addEventListener("click", function () {
+        setTimeout(function () { limpaPedido(); pmsg("No Spotify: três pontinhos da música → “Adicionar à fila”."); }, 400);
+      });
+    }
+    li.appendChild(el);
+    return li;
+  }
+
+  // Colaram um link do Spotify no campo: é uma música, ou é o link do Jam novo.
+  function mostraLink(link) {
+    var res = $("res"), m = link.match(/open\.spotify\.com\/(?:intl-[a-z-]+\/)?track\/([A-Za-z0-9]{22})/);
+    if (m) {
+      res.appendChild(resultado({ nome: "A música desse link", artista: "Spotify", uri: "spotify:track:" + m[1], link: "https://open.spotify.com/track/" + m[1] }));
+      return;
+    }
+    var li = document.createElement("li"), b = linha({ nome: "🔊 Usar como link do Jam", artista: "Só se você tá no som. Troca o Jam pra todo mundo." }, { soTexto: true }, "fila");
+    b.lastChild.textContent = "trocar";
+    b.addEventListener("click", function () {
+      var r = salva({ jam: link }, "Jam trocado! Quem escanear o QR cai nele. 🔊", pmsg);
+      limpaPedido();
+      return r;
+    });
+    li.appendChild(b); res.appendChild(li);
+  }
+
+  var espera = 0, vez = 0;
+  $("q").addEventListener("input", function () {
+    var q = this.value.trim(), minha = ++vez, res = $("res");
+    clearTimeout(espera);
+    pmsg(""); res.innerHTML = "";
+    var link = extrai(q);
+    if (link) { mostraLink(link); return; }
+    if (q.length < 3) return;
+    if (!direto() && !estado.jam) { pmsg("A caixinha tá desligada. Quem tá no som cola aqui o link do Jam.", true); return; }
+    espera = setTimeout(function () {
+      var atalho = { nome: "Não achou? Procurar “" + q + "” no Spotify", artista: "", link: noSpotify(q), soTexto: true };
+      procura(q).then(function (lista) {
+        if (minha !== vez) return;
+        lista = Array.isArray(lista) ? lista.slice(0, 6) : [];
+        lista.forEach(function (f) { res.appendChild(resultado(f)); });
+        if (!direto()) res.appendChild(resultado(atalho));
+        if (!lista.length) pmsg(direto() ? "Não achei. Tenta com o nome do artista." : "Não achei aqui. Usa o atalho pra procurar no Spotify.", true);
+      }).catch(function () {
+        if (minha !== vez) return;
+        if (!direto()) res.appendChild(resultado(atalho));
+        pmsg(direto() ? "A busca falhou. Confere a internet e tenta de novo." : "A busca cansou. Usa o atalho pra procurar no Spotify.", true);
+      });
+    }, 450);
+  });
+
+  // Entrou no Jam por aqui: guarda, pra página parar de pedir.
+  $("fila").addEventListener("click", function () {
+    if (!estado.jam || this.getAttribute("href") !== estado.jam) return;
+    try { localStorage.setItem("trilha_nojam", estado.jam); } catch (e) {}
+    setTimeout(pinta, 600);
+  });
+
+  // ---------- modo DJ ----------
+  function aviso(msg, erro) { var a = $("aviso"); a.textContent = msg; a.classList.toggle("erro", !!erro); }
+  window.avisoDj = aviso;
+
+  function salva(mudanca, ok, fala) {
+    var prox = { v: 1, jam: estado.jam, lista: estado.lista };
+    for (var k in mudanca) prox[k] = mudanca[k];
+    var aviso = fala || window.avisoDj;
+    aviso("Salvando…");
+    if (teste) { estado = { jam: prox.jam, lista: prox.lista, t: Date.now() }; pinta(); aviso(ok + " (modo teste: nada foi salvo)"); return; }
+    return fetch(TOPICO, { method: "POST", body: JSON.stringify(prox) })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); })
+      .then(function () {
+        estado = { jam: prox.jam, lista: prox.lista, t: Date.now() };
+        guarda(); pinta(); aviso(ok);
+      })
+      .catch(function () { aviso("Não rolou salvar. Confere a internet e tenta de novo.", true); });
+  }
+
+  function abreJam(texto) {
+    var u = extrai(texto);
+    if (!u) { aviso("Não achei link do Spotify aí. Copia o link de convite do Jam e tenta de novo.", true); return; }
+    $("campo").value = "";
+    salva({ jam: u }, "Fila aberta! Quem escanear o QR cai no seu Jam. 🔊");
+  }
+
+  $("colar").addEventListener("click", function () {
+    if (!navigator.clipboard || !navigator.clipboard.readText) { $("campo").focus(); aviso("Cola o link no campo aqui embaixo."); return; }
+    navigator.clipboard.readText().then(abreJam, function () { $("campo").focus(); aviso("Cola o link no campo aqui embaixo."); });
+  });
+  $("campo").addEventListener("paste", function (ev) {
+    var t = (ev.clipboardData || window.clipboardData).getData("text");
+    if (extrai(t)) { ev.preventDefault(); abreJam(t); }
+  });
+  $("campo").addEventListener("keydown", function (ev) { if (ev.key === "Enter") abreJam($("campo").value); });
+  $("fechar").addEventListener("click", function () { salva({ jam: "" }, "Jam encerrado. A caixinha tá descansando."); });
+  $("salvalista").addEventListener("click", function () {
+    var bruto = $("campolista").value.trim(), u = extrai(bruto);
+    if (bruto && !u) { aviso("Esse link não é do Spotify.", true); return; }
+    salva({ lista: u }, u ? "Playlist reserva salva." : "Playlist reserva removida.");
+  });
+
+  // ---------- telas ----------
+  // #dj abre o modo DJ. Para ver os estados sem salvar nada: #jam, #semjam, #depois e #painel.
+  function rota() {
+    var h = location.hash.replace("#", ""), eraTeste = teste;
+    demo = h === "painel";
+    teste = demo || h === "jam" || h === "semjam" || h === "depois";
+    if (eraTeste && !teste) { estado = { jam: "", lista: "", t: 0 }; caixinha = null; lembra(); }
+    depois = h === "depois" || (!teste && new Date() > FIM_DA_FESTA);
+    if (h === "jam" || demo) estado = { jam: "https://open.spotify.com/", lista: "", t: Date.now() };
+    if (h === "semjam") estado = { jam: "", lista: "https://open.spotify.com/", t: Date.now() };
+    if (teste && !demo) caixinha = null;
+    var dj = h === "dj" && !depois;
+    $("dj").hidden = !dj;
+    $("trilha").hidden = dj;
+    aviso("");
+    pinta();
+    if (dj) window.scrollTo(0, 0);
+    busca();
+    puxa();
+  }
+  window.addEventListener("hashchange", rota);
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) return;
+    if (Date.now() - ultimaBusca > 15000) busca();
+    puxa();
+  });
+  lembra();
+  rota();
+</script>
 </body>
 </html>
